@@ -26,8 +26,11 @@ sqlite3.c:
 
 
 test: changyy.so $(BIN)
-	@ rm -rf ./test.db && ./$(BIN) test.db "CREATE VIRTUAL TABLE data USING fts3();" && echo "[INFO] fts3(fts4) is enabled"
-	@ rm -rf ./test.db && echo -e ".load $(PWD)/changyy \n CREATE VIRTUAL TABLE data USING fts3(tokenize=changyy);" | ./$(BIN) test.db && echo "[INFO] changyy_tokenizer is enabled"
+	@ rm -rf ./test.db && ./$(BIN) test.db "CREATE VIRTUAL TABLE data USING fts3();" && echo "[INFO] fts3(fts4) is enabled" && rm -rf ./test.db
+	@ rm -rf ./test.db && echo -e ".load $(PWD)/changyy \n CREATE VIRTUAL TABLE data USING fts3(tokenize=changyy);" | ./$(BIN) test.db && echo "[INFO] changyy_tokenizer is enabled" && rm -rf ./test.db
+	@ rm -rf ./test.db && echo -e ".load $(PWD)/changyy \n CREATE VIRTUAL TABLE data USING fts3(tokenize=changyy); \n INSERT INTO data ('content') VALUES ('changyy changes changyys world'); \n SELECT SNIPPET(data) FROM data WHERE data MATCH 'changyy'; " | ./$(BIN) test.db && echo "[INFO] changyy_tokenizer: query 'changyy' done" && rm -rf ./test.db
+	@ rm -rf ./test.db && echo -e ".load $(PWD)/changyy \n CREATE VIRTUAL TABLE data USING fts3(tokenize=changyy); \n INSERT INTO data ('content') VALUES ('changyy changes changyys world'); \n SELECT SNIPPET(data) FROM data WHERE data MATCH 'changes'; " | ./$(BIN) test.db && echo "[INFO] changyy_tokenizer: query 'changes' done" && rm -rf ./test.db
+	@ rm -rf ./test.db && echo -e ".load $(PWD)/changyy \n CREATE VIRTUAL TABLE data USING fts3(tokenize=changyy); \n INSERT INTO data ('content') VALUES ('changyy changes changyys world'); \n SELECT SNIPPET(data) FROM data WHERE data MATCH 'changyys'; " | ./$(BIN) test.db && echo "[INFO] changyy_tokenizer: query 'changyys' done" && rm -rf ./test.db
 
 changyy.so: fts3_tokenizer.h changyy_tokenizer.c
 	@ gcc -fPIC -c changyy_tokenizer.c -o changyy_tokenizer.o
