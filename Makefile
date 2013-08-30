@@ -33,9 +33,10 @@ changyy.so:
 	@ test -e changyy.so && echo "changyy.so built"
 
 fts3_tokenizer.h:
-	#grep -n "#ifndef _FTS3_TOKENIZER_H_" sqlite3.c
-	begin_number=`grep -n "#ifndef _FTS3_TOKENIZER_H_" sqlite3.c | cut -f1 -d:`
-	echo ${begin_number}
+	@ echo $(shell grep -n "#ifndef _FTS3_TOKENIZER_H_" sqlite3.c | cut -f 1 -d ":" ) > /tmp/_FTS3_TOKENIZER_H_.begin
+	@ sed -n "$(shell grep -n "#ifndef _FTS3_TOKENIZER_H_" sqlite3.c | cut -f 1 -d ":" ),$$"p sqlite3.c > /tmp/_FTS3_TOKENIZER_H_.middle
+	@ sed -n "1,$(shell grep -n "#endif" /tmp/_FTS3_TOKENIZER_H_.middle | head -n 1 | cut -f 1 -d ":")"p /tmp/_FTS3_TOKENIZER_H_.middle > fts3_tokenizer.h
+	@ test -e fts3_tokenizer.h && echo "fts3_tokenizer.h is built"
 
 clean:
 	rm -rf ./$(BIN) ./test.db ./changyy.so ./*.o ./a.out
