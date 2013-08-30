@@ -6,7 +6,7 @@ LIB=-ldl -pthread
 BIN=sqlite3
 FLAGS=-DSQLITE_ENABLE_FTS3 -DSQLITE_ENABLE_FTS3_PARENTHESIS
 
-sqlite:
+sqlite: fts3_tokenizer.h
 	@ \
 	( \
 		test -e sqlite3.c \
@@ -22,7 +22,10 @@ sqlite:
 	$(CC) $(FLAGS) sqlite3.c shell.c changyy_tokenizer.c -o $(BIN) $(LIB)
 
 test: changyy.so sqlite
-	@ rm -rf ./test.db && ./$(BIN) test.db "CREATE VIRTUAL TABLE data USING fts3();" && echo "fts3(fts4) is enabled"
+	@ rm -rf ./test.db
+	@ ./$(BIN) test.db "CREATE VIRTUAL TABLE data USING fts3();" && echo "fts3(fts4) is enabled"
+	@ rm -rf ./test.db
+	@ echo -e ".load $(PWD)/changyy \n CREATE VIRTUAL TABLE data USING fts3(tokenize=changyy);" | ./$(BIN) test.db && echo "changyy_tokenizer is enabled"
 
 changyy.so:
 	@ gcc -fPIC -c changyy_tokenizer.c -o changyy_tokenizer.o
@@ -35,4 +38,4 @@ fts3_tokenizer.h:
 	echo ${begin_number}
 
 clean:
-	rm -rf ./$(BIN) ./test.db ./changyy.so
+	rm -rf ./$(BIN) ./test.db ./changyy.so ./*.o ./a.out
