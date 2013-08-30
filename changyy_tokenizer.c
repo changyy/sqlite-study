@@ -182,7 +182,7 @@ static int changyyNext(
       *piStartOffset = iStartOffset;
       *piEndOffset = c->iOffset;
       *piPosition = c->iToken++;
-
+      if( !strncmp(c->pToken,"changyy", n > 7 ? 7 : n ) )
       return SQLITE_OK;
     }
   }
